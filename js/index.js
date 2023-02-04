@@ -16,7 +16,6 @@ const life1 = document.getElementById("lifeOne");
 const life2 = document.getElementById("lifeTwo");
 const life3 = document.getElementById("lifeThree");
 const levelImg = document.getElementById("level_img");
-const nextButton = document.getElementById("level_ended");
 const nextDiv = document.getElementById("next");
 const winText = document.getElementById("winText");
 const winScore = document.getElementById("winScore");
@@ -49,9 +48,6 @@ let gameRestart = false;
 let score = 0;
 let current_level = 1;
 let totalNumberOfBrick;
-let clearedBricks;
-let power;
-let newPowerUp = false;
 
 
 
@@ -64,7 +60,6 @@ function stopAnimation() {
 function startGame() {
 
     current_level = 1;
-    clearedBricks = 0;
     setLevel();
     welcomeScreen.style.display = 'none';
     nextDiv.style.display = 'none';
@@ -109,12 +104,11 @@ function gameOver() {
     setLevel();
 
 }
+
 function gameWin() {
     stopAnimation();
     welcomeScreen.style.display = 'flex';
     play_gameWin();
-    start_btn.disabled = true;
-    start_btn.style.cursor = 'default';
     start_btn.innerHTML = "PLAY AGAIN";
     start_btn.style.fontSize = "1.7rem";
     winText.style.display = 'inline-block';
@@ -123,7 +117,9 @@ function gameWin() {
     setLevel();
 
 }
+
 function loadEvents() {
+
     pause_btn.addEventListener('click', pause);
     canvas.addEventListener("mousemove", function (event) {
         if (event.offsetX <= paddle.width / 2) {
@@ -146,6 +142,7 @@ function loadEvents() {
             ball.isMoving = true;
         }
     });
+
     document.addEventListener("keyup", function (event) {
         if (event.key === "ArrowLeft") {
             leftArrow = false;
@@ -194,6 +191,8 @@ function moveBall() {
     ballMoveAnimation = requestAnimationFrame(moveBall);
 
 }
+
+
 function ballWallCollision() {
     if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
         play_ballCollision();
@@ -212,25 +211,28 @@ function ballWallCollision() {
     }
 
 }
+
+
 function hitPaddle(power, brick) {
 
-    if (power.y + power.height == paddle.y && power.x > paddle.x && power.x < paddle.x + paddle.width) 
- {
+    if (power.y + power.height == paddle.y && power.x > paddle.x && power.x < paddle.x + paddle.width) {
         switch (power.type) {
             case 0:
                 if (life < 3) {
                     life++;
+                    play_powerUp();
                 }
                 break;
             case 1:
                 paddle.width += 20;
+                play_powerUp();
                 break;
         }
         brick.hasPower = false;
     }
 }
 
-function ballPaddlleCollision() {
+function ballPaddleCollision() {
     if ((ball.y + ball.radius) > paddle.y &&
         (ball.y + ball.radius) < paddle.y + paddle.height &&
         (ball.x + ball.radius) > paddle.x &&
@@ -261,14 +263,12 @@ function ballBrickCollision() {
                     if (b.brick_strength === 2 || b.brick_strength === 3) {
                         play_ballCollision();
                         b.brick_strength--;
-                        score+=5;
+                        score += 5;
                     } else if (b.brick_strength === 1) {
                         play_brickDestroy();
                         b.brick_strength--;
                         totalNumberOfBrick--;
                         b.powerActive = true;
-                        clearedBricks++;
-                        newPowerUp = true;
 
                         if (totalNumberOfBrick === 0) {
                             current_level++;
@@ -280,7 +280,7 @@ function ballBrickCollision() {
                                 setLevel();
                             }
                         }
-                        score+=10;
+                        score += 10;
                     }
 
                     scoreBoard.value = score;
@@ -296,9 +296,10 @@ function ballBrickCollision() {
         }
     }
 }
+
+
 function setLevel() {
     levelImg.value = current_level;
-    clearedBricks = 0;
     switch (current_level) {
         case 1:
             totalNumberOfBrick = 45;
@@ -330,7 +331,7 @@ function setLevel() {
     }
 }
 
-function checkLifes() {
+function checkLives() {
     switch (life) {
         case 2:
             life1.classList.add(heartIcon);
@@ -382,7 +383,7 @@ function checkLifes() {
 function update() {
     movePaddle();
     ballWallCollision();
-    ballPaddlleCollision();
+    ballPaddleCollision();
     ballBrickCollision();
 
 }
@@ -390,7 +391,7 @@ function update() {
 function drawGame() {
     paddle.draw();
     wall.drawPowers();
-    wall.drawbricks();
+    wall.drawBricks();
     ball.draw();
 
 }
@@ -400,8 +401,8 @@ function tick() {
     drawGame();
     update();
     gameAnimation = requestAnimationFrame(tick);
-    checkLifes();
-    if (!checkLifes()) {
+    checkLives();
+    if (!checkLives()) {
         gameOver();
         return;
     }

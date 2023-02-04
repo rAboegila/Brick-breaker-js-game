@@ -7,6 +7,7 @@ const ballCollision_sound = '../audio/mixkit-quick-jump-arcade-game-239.wav';
 const gameWin_sound = '../audio/mixkit-final-level-bonus-2061.wav';
 
 const playerObject = document.getElementById('playerElement');
+const playerObject2 = document.getElementById('playerElement2');
 const volumeIcon = document.getElementById('sound');
 
 let muted = "fa-volume-xmark";
@@ -36,8 +37,8 @@ export function play_levelUp() {
     playerObject.play();
 }
 export function play_ballCollision() {
-    playerObject.src = ballCollision_sound;
-    playerObject.play();
+    playerObject2.src = ballCollision_sound;
+    playerObject2.play();
 }
 export function play_gameWin() {
     playerObject.src = gameWin_sound;
@@ -46,12 +47,14 @@ export function play_gameWin() {
 function muteAudio() {
     if (!mute) {
         playerObject.muted = true;
+        playerObject2.muted = true;
         volumeIcon.classList.remove(volume);
         volumeIcon.classList.add(muted);
         mute = true;
     }
     else {
         playerObject.muted = false;
+        playerObject2.muted = false;
         volumeIcon.classList.remove(muted);
         volumeIcon.classList.add(volume);
         mute = false;
